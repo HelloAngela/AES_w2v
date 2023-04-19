@@ -21,7 +21,7 @@ tf.compat.v1.flags.DEFINE_float("keep_prob", 0.9, "Keep probability for dropout"
 tf.compat.v1.flags.DEFINE_integer("evaluation_interval", 5, "Evaluate and print results every x epochs")
 tf.compat.v1.flags.DEFINE_integer("batch_size", 15, "Batch size for training.")
 tf.compat.v1.flags.DEFINE_integer("feature_size", 100, "Feature size")
-tf.compat.v1.flags.DEFINE_integer("num_samples", 3, "Number of samples selected from training for each score")
+tf.compat.v1.flags.DEFINE_integer("num_samples", 1, "Number of samples selected from training for each score")
 tf.compat.v1.flags.DEFINE_integer("hops", 3, "Number of hops in the Memory Network.")
 tf.compat.v1.flags.DEFINE_integer("epochs", 200, "Number of epochs to train for.")
 tf.compat.v1.flags.DEFINE_integer("embedding_size", 300, "Embedding size for embedding matrices.")
@@ -67,8 +67,7 @@ else:
 orig_stdout = sys.stdout
 timestamp = time.strftime("%b_%d_%Y_%H%M%S", time.localtime())
 file_name = 'essay_set_{}_cv_{}_{}'.format(essay_set_id, num_samples, timestamp)
-out_dir = os.path.abspath("C:/Users/hello/Desktop/MIMI2002/runs/")
-# out_dir = os.path.abspath("C:/Users/hello/Desktop/AES_WE/runs/")
+out_dir = os.path.abspath("C:/Users/hello/Desktop/AES_WE/runs/")
 # out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", folder_name))
 # if not os.path.exists(out_dir):
 #     os.makedirs(out_dir)
@@ -89,10 +88,7 @@ with open(out_dir + '/params', 'w') as f:
         f.write("\n")
 
 # hyper-parameters end here
-
-training_path = "C:/Users/hello/Desktop/MIMI2002/mimi_scene1d.tsv"
-# training_path = "C:/Users/hello/Desktop/AES_WE/training_set_rel3.tsv"
-# training_path = "C:/Users/hello/Desktop/2018 paper/txt_as_list3.csv"
+training_path = "C:/Users/hello/Desktop/AES_WE/training_set_rel3.tsv"
 essay_list, resolved_scores, essay_id = data_utils.load_training_data(training_path, essay_set_id)
 
 max_score = max(resolved_scores)
@@ -116,12 +112,7 @@ score_range = range(min_score, max_score + 1)
 # load glove
 word_idx, word2vec = data_utils.load_glove(num_tokens, dim=embedding_size)
 
-# vocab_size = len(word_idx) + 1
-
-# hard-coding vocab size if using custom w2v dict
-# vocab_size = 4086
-vocab_size = 400001
-
+vocab_size = len(word_idx) + 1
 # stat info on data set
 
 sent_size_list = list(map(len, [essay for essay in essay_list]))

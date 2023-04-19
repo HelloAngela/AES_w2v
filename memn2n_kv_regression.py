@@ -5,10 +5,11 @@ The implementation is based on http://arxiv.org/abs/1503.08895 [1]
 from __future__ import absolute_import
 from __future__ import division
 
-import tensorflow as tf
 from six.moves import range
 import numpy as np
-
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+# import tensorflow as tf
 
 # from attention_reader import Attention_Reader
 
@@ -53,7 +54,7 @@ def zero_nil_slot(t, name=None):
     with tf.name_scope(name, "zero_nil_slot", [t]) as name:
         t = tf.convert_to_tensor(t, name="t")
         s = tf.shape(t)[1]
-        z = tf.zeros(tf.pack([1, s]))
+        z = tf.zeros(tf.stack([1, s]))
         return tf.concat(0, [z, tf.slice(t, [1, 0], [-1, -1])], name=name)
 
 
@@ -118,11 +119,18 @@ class MemN2N_KV(object):
             self.reader_feature_size = self._n_hidden
 
         self.A = tf.get_variable('A', shape=[self._feature_size, self.reader_feature_size],
-                                 initializer=tf.contrib.layers.xavier_initializer())
+                                 initializer=tf.keras.initializers.glorot_normal())
         self.A_mvalue = tf.get_variable('A_mvalue', shape=[self._feature_size, self.reader_feature_size],
-                                        initializer=tf.contrib.layers.xavier_initializer())
+                                        initializer=tf.keras.initializers.glorot_normal())
         self.A_mkey = tf.get_variable('A_mkey', shape=[self._feature_size, self.reader_feature_size],
-                                      initializer=tf.contrib.layers.xavier_initializer())
+                                      initializer=tf.keras.initializers.glorot_normal())
+
+        # self.A = tf.get_variable('A', shape=[self._feature_size, self.reader_feature_size],
+        #                          initializer=tf.contrib.layers.xavier_initializer())
+        # self.A_mvalue = tf.get_variable('A_mvalue', shape=[self._feature_size, self.reader_feature_size],
+        #                                 initializer=tf.contrib.layers.xavier_initializer())
+        # self.A_mkey = tf.get_variable('A_mkey', shape=[self._feature_size, self.reader_feature_size],
+        #                               initializer=tf.contrib.layers.xavier_initializer())
 
         # self.TK = tf.get_variable('TK', shape=[self._memory_value_size, self.reader_feature_size],
         #                          initializer=tf.contrib.layers.xavier_initializer())
@@ -150,7 +158,7 @@ class MemN2N_KV(object):
 
         r_list = []
         R = tf.get_variable('R', shape=[self._feature_size, self._feature_size],
-                            initializer=tf.contrib.layers.xavier_initializer())
+                            initializer=tf.keras.initializers.glorot_normal())
 
         for _ in range(self._hops):
             # define R for variables
@@ -167,7 +175,7 @@ class MemN2N_KV(object):
         elif reader == 'simple_gru':
             # self.B = tf.get_variable('B', shape=[self._feature_size, self._embedding_size],
             self.B = tf.get_variable('B', shape=[self._feature_size, self._vocab_size],
-                                     initializer=tf.contrib.layers.xavier_initializer())
+                                     initializer=tf.keras.initializers.glorot_normal())
         logits_bias = tf.get_variable('logits_bias', [1])
         # y_tmp = tf.matmul(self.B, self.W_memory, transpose_b=True)
         with tf.name_scope("prediction"):
@@ -176,7 +184,7 @@ class MemN2N_KV(object):
             # normed_score = tf.squeeze(tf.nn.sigmoid(tf.cast(logits, tf.float32)))
             # score = normed_score * (max_score - min_score) + min_score
             score = tf.squeeze(logits)
-            mse = tf.reduce_mean(tf.square(tf.sub(score, self._score_encoding)))
+            mse = tf.reduce_mean(tf.square(tf.subtract(score, self._score_encoding)))
             # loss op
             trainable_vars = tf.trainable_variables()
             lossL2 = tf.add_n([tf.nn.l2_loss(v) for v in trainable_vars])
@@ -258,7 +266,7 @@ class MemN2N_KV(object):
                 u_k = tf.nn.dropout(tf.nn.relu(tf.matmul(R, u[-1] + o_k)), self.keep_prob)
 
                 u.append(u_k)
-            self.mem_attention_probs = tf.pack(self.mem_attention_probs, axis=1)
+            self.mem_attention_probs = tf.stack(self.mem_attention_probs, axis=1)
             # test point
             return u[-1]
             # return tf.add_n(u)/len(u)

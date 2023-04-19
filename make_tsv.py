@@ -7,13 +7,13 @@ import csv
 
 # generating a list of file names for iterative text conversion later
 with open("C:/Users/hello/Desktop/2018 paper/list_txt.txt", "w") as ls:
-    txt_list = glob.glob(pathname="C:/Users/hello/Desktop/2018 paper/Training_set_txt/*.txt")
+    txt_list = glob.glob(pathname="C:/Users/hello/Desktop/2018 paper/Val_set_txt/*.txt")
     for lines in txt_list:
         ls.writelines(lines+'\n')
 # load the list of file names to a panda dataframe
 df = pd.DataFrame()
 df = df.append(pd.DataFrame(txt_list), ignore_index=True)
-df2 = pd.read_csv("C:/Users/hello/Desktop/2018 paper/analysis/train_grades.csv")
+df2 = pd.read_csv("C:/Users/hello/Desktop/2018 paper/Val_set_txt/val_grades.csv")
 grade = df2['Grade']
 
 # truncating the text file paths into paper ID for analysis later
@@ -36,5 +36,5 @@ for i in txt_list:
 df['essay'] = l_combo
 df['essay_id'] = df1
 df['score'] = grade
-df.to_csv("C:/Users/hello/Desktop/2018 paper/txt_as_list.csv", encoding='utf-8', index=False)
+df.to_csv("C:/Users/hello/Desktop/2018 paper/txt_as_list_val.csv", encoding='utf-8', index=False)
 

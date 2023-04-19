@@ -7,15 +7,23 @@ from collections import Counter
 
 
 def load_training_data(training_path, essay_set=1):
+    # setting for MIMI2022 corpus
+    training_df = pd.read_csv(training_path, delimiter='\t', encoding="utf-8")
+    resolved_score = training_df['score_1d']
+    essay_ids = training_df['SID']
+    essays = training_df['txt_1d']
+
+    # settings for ASAP corpus
     # training_df = pd.read_csv(training_path, delimiter='\t', encoding="ISO-8859-1")
-    training_df = pd.read_csv(training_path, encoding="utf-8")
-    # resolved score for essay set 1
-    # resolved_score = training_df[training_df['essay_set'] == essay_set]['score']
+    # resolved_score = training_df[training_df['essay_set'] == essay_set]['domain1_score']
     # essay_ids = training_df[training_df['essay_set'] == essay_set]['essay_id']
     # essays = training_df[training_df['essay_set'] == essay_set]['essay']
-    resolved_score = training_df['score']
-    essay_ids = training_df['essay_id']
-    essays = training_df['essay']
+
+    # settings for bmol reports
+    # training_df = pd.read_csv(training_path, encoding="utf-8")
+    # resolved_score = training_df['score']
+    # essay_ids = training_df['essay_id']
+    # essays = training_df['essay_500']
     essay_list = []
     # turn an essay to a list of words
     for idx, essay in essays.iteritems():
@@ -31,8 +39,9 @@ def load_glove(token_num=6, dim=300):
     # first word is nil
     word2vec.append([0] * dim)          #appending dimention (300) number of zeroes to w2v list
     count = 1                           #for word counting later
-    with open("C:/Users/hello/Desktop/AES_WE/glove.6B.300d.txt", encoding="utf-8") as f:
+    # with open("C:/Users/hello/Desktop/AES_WE/bmol_embedding_noint.txt", encoding="utf-16") as f:
 
+    with open("C:/Users/hello/Desktop/AES_WE/glove.6B.300d.txt", encoding="utf-8") as f:
     # with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "glove/glove." + str(token_num) +
     #                                                                    "B." + str(dim) + "d.txt")) as f:
 

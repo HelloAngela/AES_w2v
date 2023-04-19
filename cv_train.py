@@ -58,7 +58,7 @@ epochs = FLAGS.epochs
 num_samples = FLAGS.num_samples
 num_tokens = FLAGS.token_num
 test_batch_size = batch_size
-random_state = 0
+random_state = 42
 if is_regression:
     from memn2n_kv_regression import MemN2N_KV
 else:
